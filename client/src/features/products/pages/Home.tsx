@@ -32,6 +32,7 @@ const Home = () => {
 };
 
 const Recommendations = () => {
+  
   return (
     <Box mb="xl">
       <Title order={2} mb="md">

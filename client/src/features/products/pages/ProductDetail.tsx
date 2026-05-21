@@ -9,37 +9,52 @@ import {
   Title,
 } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-
+import { useProduct } from "../hooks/useProduct";
+import { useParams } from "react-router-dom";
 const ProductDetail = () => {
-  const navigate = useNavigate();
+  const {id} = useParams()
 
+  const { data: product, isLoading, error } = useProduct(Number(id));
+  const navigate = useNavigate();
+  
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+  if (error || !product) {
+    return <Text>Error loading products</Text>;
+  }
   return (
     <Container size="lg" py="xl">
       <Grid>
+      
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Image
-            src="https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp"
-            alt="Product"
+            src={product.thumbnail}
+            alt={product.title}
             height={400}
           />
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Title order={1} mb="md">
-            Product Title
+            {product.title}
           </Title>
           <Group mb="md">
             <Badge size="lg" color="pink">
-              $99.99
+              ${product.price}
             </Badge>
             <Badge size="lg" color="blue">
-              Category
+              {product.category}
             </Badge>
+            <Badge color="red" size="lg">
+            -{product.discountPercentage?.toFixed()}% OFF
+          </Badge>
           </Group>
           <Text size="lg" mb="md">
-            Product description goes here
+           {product.description}
           </Text>
+         
           <Text size="md" mb="xl" c="dimmed">
-            Stock: 10 units available
+            Stock: {product.stock} units available
           </Text>
           <Group>
             <Button size="lg">Add to Cart</Button>
