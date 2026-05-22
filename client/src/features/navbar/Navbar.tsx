@@ -9,10 +9,27 @@ import { useNavigate } from "react-router-dom";
 
 import { SearchBar } from "./SearchBar";
 import { ThemeToggler } from "./ThemeToggler";
+import { useContext } from "react";
+import { AuthContext } from "../auth/pages/context/AuthContext";
+import { IconLogin } from "@tabler/icons-react";
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const auth = useContext(AuthContext);
 
+  if (!auth) {
+    throw new Error("AuthContext not found");
+  }
+
+  const { user, logout } = auth;
+  const handleCartClick = () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+  
+    navigate("/cart");
+  };
   return (
     <Group
       justify="space-between"
@@ -36,43 +53,55 @@ export const Navbar = () => {
           <Button
             variant="subtle"
             leftSection={<IconShoppingCart size={18} />}
-            onClick={() => navigate("/cart")}
+            onClick={handleCartClick}
           >
             Cart
           </Button>
         </Indicator>
 
-        <Menu shadow="md" width={200}>
-          <Menu.Target>
-            <Button
-              variant="subtle"
-              rightSection={<IconChevronDown size={16} />}
-            >
-              <Group gap="xs">
-                <Avatar src="" alt="User" size="sm" />
-                <Text size="sm">User</Text>
-              </Group>
-            </Button>
-          </Menu.Target>
+        {user ? (
+          <Menu shadow="md" width={200}>
+            <Menu.Target>
+              <Button
+                variant="subtle"
+                rightSection={<IconChevronDown size={16} />}
+              >
+                <Group gap="xs">
+                  <Avatar src="" alt="User" size="sm" />
+                  <Text size="sm">{user ?? "Guest"}</Text>
+                </Group>
+              </Button>
+            </Menu.Target>
 
-          <Menu.Dropdown>
-            <Menu.Label>Account</Menu.Label>
-            <Menu.Item
-              leftSection={<IconSettings size={16} />}
-              onClick={() => navigate("/settings")}
-            >
-              Settings
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item
-              leftSection={<IconLogout size={16} />}
-              color="red"
-              onClick={() => navigate("/login")}
-            >
-              Logout
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+            <Menu.Dropdown>
+              <Menu.Label>Account</Menu.Label>
+              <Menu.Item
+                leftSection={<IconSettings size={16} />}
+                onClick={() => navigate("/settings")}
+              >
+                Settings
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item
+                leftSection={<IconLogout size={16} />}
+                color="red"
+                onClick={() => {
+                  logout();
+                  navigate("/");
+                }}
+              >
+                Logout
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        ) : (
+          <Button
+            leftSection={<IconLogin size={18} />}
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </Button>
+        )}
       </Group>
     </Group>
   );

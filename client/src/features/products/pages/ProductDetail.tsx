@@ -11,18 +11,29 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useProduct } from "../hooks/useProduct";
 import { useParams } from "react-router-dom";
+import { useAddCartItem } from "../../cart/pages/hooks/useAddCart";
 const ProductDetail = () => {
   const {id} = useParams()
 
   const { data: product, isLoading, error } = useProduct(Number(id));
   const navigate = useNavigate();
-  
+  const addCartItem = useAddCartItem()
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
   if (error || !product) {
     return <Text>Error loading products</Text>;
   }
+  const cartItem = {
+    id: product.id,
+    title: product.title,
+    price: product.price,
+    quantity: 1,
+    total: product.price,
+    discountPercentage: product.discountPercentage,
+    discountedTotal: product.price,
+    thumbnail: product.thumbnail,
+  };
   return (
     <Container size="lg" py="xl">
       <Grid>
@@ -57,7 +68,7 @@ const ProductDetail = () => {
             Stock: {product.stock} units available
           </Text>
           <Group>
-            <Button size="lg">Add to Cart</Button>
+            <Button size="lg" onClick={() => addCartItem.mutate(cartItem)}>Add to Cart</Button>
             <Button
               size="lg"
               variant="outline"

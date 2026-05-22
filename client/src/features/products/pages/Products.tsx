@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 const Products = () => {
   const { data, isLoading, error } = useProducts();
   const navigate = useNavigate();
+  
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
