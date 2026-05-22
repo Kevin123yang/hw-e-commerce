@@ -107,7 +107,7 @@ const Cart = () => {
               Clear Cart
             </Button>
 
-            <Button size="lg">Continue Shopping</Button>
+            <Button onClick={()=>navigate("/products")} size="lg">Continue Shopping</Button>
           </Group>
         </Card>
       </Group>
