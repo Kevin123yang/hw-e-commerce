@@ -13,18 +13,23 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthForm } from "../hooks/hooks";
 const fakeSignup = async () => {
   await new Promise((res) => setTimeout(() => res(null), 1000));
   throw new Error("Invalid credentials");
 };
 const Signup = () => {
-  const [submitted, setSubmitted] = useState(false);
+  const {
+    username,
+    setUsername,
+    password,
+    setPassword,
+    submitted,
+    setSubmitted,
+  } = useAuthForm();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [checkError, setCheckError] = useState(false);
   const isEmailValid = /^\S+@\S+\.\S{2,}$/.test(email);
   const isPasswordValid = password.length >= 6;
   const isUsername = username.length >= 3;

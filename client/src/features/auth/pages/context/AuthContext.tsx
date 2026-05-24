@@ -14,7 +14,7 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<string | null>(null);
-
+  
   const login = (username: string) => {
     setUser(username);
   };

@@ -11,16 +11,22 @@ import {
 } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { loginApi } from "./api/ authApi";
 import { AuthContext } from "./context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useAuthForm } from "../hooks/hooks";
 
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const {
+    username,
+    setUsername,
+    password,
+    setPassword,
+    submitted,
+    setSubmitted,
+  } = useAuthForm();
   const navigate = useNavigate()
   const auth = useContext(AuthContext);
   if (!auth) {
