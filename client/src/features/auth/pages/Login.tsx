@@ -16,9 +16,11 @@ import { loginApi } from "./api/ authApi";
 import { AuthContext } from "./context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate()
   const auth = useContext(AuthContext);
   if (!auth) {
@@ -32,6 +34,15 @@ const Login = () => {
       navigate("/");
     },
   });
+  const handleLogin = () => {
+    if (!username.trim() || !password.trim()) return
+    setSubmitted(true)
+    mutation.mutate({
+      username,
+      password,
+    });
+  };
+
   return (
     <Container size="xs" py="xl">
       <Card
@@ -43,12 +54,13 @@ const Login = () => {
           width: 500,
         }}
       >
+        <form onSubmit={handleLogin}noValidate>
         <Title order={2} mb="xl" ta="center">
           Login
         </Title>
         {mutation.isError && (
           <Alert color="red" mb="md">
-            Invalid username or password
+            Invalid credentials
           </Alert>
         )}
         <TextInput
@@ -56,6 +68,11 @@ const Login = () => {
           placeholder="emilys"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          error={
+            submitted && !username.trim()
+              ? "Username is required"
+              : ""
+          }
         />
 
         <PasswordInput
@@ -64,12 +81,19 @@ const Login = () => {
           placeholder="Enter password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          error={
+            submitted && !password.trim()
+              ? "Password is required"
+              : ""
+          }
         />
 
         <Button
           fullWidth
           mt="xl"
-          onClick={() => mutation.mutate({ username, password })}
+          type="submit"
+          onClick={()=> mutation.reset()}
+          loading={mutation.isPending}
         >
           Login
         </Button>
@@ -78,9 +102,11 @@ const Login = () => {
         </Text>
 
         <Text ta="center" c="dimmed" mt="sm">
-          Don't have an account? <Anchor href="/signup">Sign up</Anchor>
+          Don't have an account? <Anchor onClick={()=>navigate("/signup")}>Sign up</Anchor>
         </Text>
+        </form>
       </Card>
+      
     </Container>
   );
 };

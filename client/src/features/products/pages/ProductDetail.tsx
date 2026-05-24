@@ -7,19 +7,25 @@ import {
   Image,
   Text,
   Title,
+  Loader,
+  Center,
 } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useProduct } from "../hooks/useProduct";
 import { useParams } from "react-router-dom";
 import { useAddCartItem } from "../../cart/pages/hooks/useAddCart";
 const ProductDetail = () => {
-  const {id} = useParams()
+  const { id } = useParams();
 
   const { data: product, isLoading, error } = useProduct(Number(id));
   const navigate = useNavigate();
-  const addCartItem = useAddCartItem()
+  const addCartItem = useAddCartItem();
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <Center>
+        <Loader />;
+      </Center>
+    );
   }
   if (error || !product) {
     return <Text>Error loading products</Text>;
@@ -37,13 +43,8 @@ const ProductDetail = () => {
   return (
     <Container size="lg" py="xl">
       <Grid>
-      
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Image
-            src={product.thumbnail}
-            alt={product.title}
-            height={400}
-          />
+          <Image src={product.thumbnail} alt={product.title} height={400} />
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Title order={1} mb="md">
@@ -57,18 +58,20 @@ const ProductDetail = () => {
               {product.category}
             </Badge>
             <Badge color="red" size="lg">
-            -{product.discountPercentage?.toFixed()}% OFF
-          </Badge>
+              -{product.discountPercentage?.toFixed()}% OFF
+            </Badge>
           </Group>
           <Text size="lg" mb="md">
-           {product.description}
+            {product.description}
           </Text>
-         
+
           <Text size="md" mb="xl" c="dimmed">
             Stock: {product.stock} units available
           </Text>
           <Group>
-            <Button size="lg" onClick={() => addCartItem.mutate(cartItem)}>Add to Cart</Button>
+            <Button size="lg" onClick={() => addCartItem.mutate(cartItem)}>
+              Add to Cart
+            </Button>
             <Button
               size="lg"
               variant="outline"
