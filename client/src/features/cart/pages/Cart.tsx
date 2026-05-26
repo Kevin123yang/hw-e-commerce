@@ -6,35 +6,51 @@ import {
   Table,
   Title,
   Text,
+  Center,
+  Loader,
 } from "@mantine/core";
 
 import { useCart } from "./hooks/useCart";
 
 import type { CartItem } from "./type/cartItem";
-import { useEffect, useState } from "react";
 import { useRemoveCartItem } from "./hooks/useRemoveCartItem";
 import { useClearCart } from "./hooks/useClearCart";
 import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../auth/pages/context/AuthContext";
 
 const Cart = () => {
-  const { data, isLoading, error } = useCart();
-  const removeCartItem = useRemoveCartItem();
-  const clearCartItem = useClearCart();
+  const auth = useContext(AuthContext);
+  if (!auth) throw new Error("AuthContent not found");
+  const { user } = auth;
+
+  const { data, isLoading, error } = useCart(user?.id);
+  const removeCartItem = useRemoveCartItem(user?.id);
+  const clearCartItem = useClearCart(user?.id);
   const navigate = useNavigate();
-  const [cartProducts, setCartProducts] = useState<CartItem[]>([]);
-  useEffect(() => {
-    if (data) {
-      setCartProducts(data.carts[0].products);
-    }
-  }, [data]);
-  if (isLoading) return <div>Loading...</div>;
+  const [loading, setLoading] = useState(false);
+
+  const handleContinue = async () => {
+    setLoading(true);
+
+    await new Promise((res) => setTimeout(res, 1000));
+    setLoading(false);
+    navigate("/products");
+  };
+  if (isLoading)
+    return (
+      <Center>
+        <Loader />
+      </Center>
+    );
 
   if (error) return <div>Failed to load cart</div>;
- 
+  const products = data?.carts?.[0]?.products ?? [];
 
-  const total = cartProducts.reduce((sum, product) => sum + product.total, 0);
-  const cart = data.carts[0];
-  const products = cart.products;
+  const total = products.reduce(
+    (sum: number, product: CartItem) => sum + product.total,
+    0
+  );
 
   if (products.length === 0) {
     return (
@@ -71,7 +87,7 @@ const Cart = () => {
         </Table.Thead>
 
         <tbody>
-          {cartProducts.map((product: CartItem) => (
+          {products.map((product: CartItem) => (
             <tr key={product.id}>
               <Table.Td>Product #{product.id}</Table.Td>
               <Table.Td>${product.price}</Table.Td>
@@ -80,6 +96,7 @@ const Cart = () => {
 
               <td>
                 <Button
+                  loading={removeCartItem.isPending}
                   onClick={() => removeCartItem.mutate(product.id)}
                   color="red"
                   size="xs"
@@ -100,6 +117,7 @@ const Cart = () => {
 
           <Group>
             <Button
+              loading={clearCartItem.isPending}
               variant="outline"
               color="red"
               onClick={() => clearCartItem.mutate()}
@@ -107,7 +125,9 @@ const Cart = () => {
               Clear Cart
             </Button>
 
-            <Button onClick={()=>navigate("/products")} size="lg">Continue Shopping</Button>
+            <Button loading={loading} onClick={handleContinue} size="lg">
+              Continue Shopping
+            </Button>
           </Group>
         </Card>
       </Group>

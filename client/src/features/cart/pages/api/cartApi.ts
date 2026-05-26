@@ -1,7 +1,7 @@
 import { axiosClient } from "../../../../lib/axiosClient";
 
-export async function fetchCart() {
-    const res = await axiosClient.get("/cart");
+export async function fetchCart(userId:number) {
+    const res = await axiosClient.get(`/carts/user/${userId}`);
   
     return res.data;
   }

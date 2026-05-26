@@ -1,39 +1,37 @@
-import { Badge, Button, Card, Group, Text } from '@mantine/core';
+import { Badge, Button, Card, Group, Text,Image } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 
-// import { ProductImage } from './ProductImage';
 
-export const ProductCard = () => {
+export const ProductCard = ({ product }: { product: any }) => {
+  const navigate = useNavigate();
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <Card shadow="sm" padding="lg" radius="md" withBorder >
       <Card.Section>
-        {/* <ProductImage src="" alt="Product" height={160} /> */}
+        <Image src={product.thumbnail} alt={product.title} height={160} />
       </Card.Section>
 
-      <Group justify="space-between" mt="md" mb="xs">
-        <Text fw={500} lineClamp={1} style={{ flex: 1 }}>
-          Product Title
+      <Group justify="space-between" mt="md" wrap="nowrap">
+        <Text fw={700} lineClamp={1} style={{ flex: 1 }}>
+          {product.title}
         </Text>
-        <Badge color="pink">$99.99</Badge>
+
+        <Badge color="pink">${product.price}</Badge>
       </Group>
 
-      <Text size="sm" c="dimmed" lineClamp={2}>
-        Product description goes here
+      <Text size="sm" c="dimmed" lineClamp={2} mt="sm">
+        {product.description}
       </Text>
 
-      <Group>
-        <Text size="sm" mt="xs">
-          Stock: 10
-        </Text>
-        <Text size="sm" mt="xs">
-          Rating: 4.5
-        </Text>
+      <Group mt="sm">
+        <Text size="sm">Stock: {product.stock}</Text>
+        <Text size="sm">Rating: {product.rating}</Text>
       </Group>
 
       <Button
         color="blue"
         fullWidth
-        mt="md"
-        radius="md"
+        mt="auto"
+        onClick={() => navigate(`/products/${product.id}`)}
       >
         View Details
       </Button>

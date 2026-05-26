@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchCart } from "../api/cartApi";
 
-export function useCart() {
+export function useCart(userId?: number) {
   return useQuery({
-    queryKey: ["cart"],
-    queryFn: fetchCart,
+    queryKey: ["cart",userId],
+    queryFn: ()=> fetchCart(userId!),
   });
 }

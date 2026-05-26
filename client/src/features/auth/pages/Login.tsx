@@ -17,7 +17,6 @@ import { AuthContext } from "./context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useAuthForm } from "../hooks/hooks";
 
-
 const Login = () => {
   const {
     username,
@@ -27,7 +26,7 @@ const Login = () => {
     submitted,
     setSubmitted,
   } = useAuthForm();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const auth = useContext(AuthContext);
   if (!auth) {
     throw new Error("AuthContext not found");
@@ -36,13 +35,15 @@ const Login = () => {
   const mutation = useMutation({
     mutationFn: loginApi,
     onSuccess: (data) => {
-      login(data.username);
+      console.log(data);
+
+      login(data);
       navigate("/");
     },
   });
   const handleLogin = () => {
-    if (!username.trim() || !password.trim()) return
-    setSubmitted(true)
+    if (!username.trim() || !password.trim()) return;
+    setSubmitted(true);
     mutation.mutate({
       username,
       password,
@@ -60,59 +61,51 @@ const Login = () => {
           width: 500,
         }}
       >
-        <form onSubmit={handleLogin}noValidate>
-        <Title order={2} mb="xl" ta="center">
-          Login
-        </Title>
-        {mutation.isError && (
-          <Alert color="red" mb="md">
-            Invalid credentials
-          </Alert>
-        )}
-        <TextInput
-          label="Username"
-          placeholder="emilys"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          error={
-            submitted && !username.trim()
-              ? "Username is required"
-              : ""
-          }
-        />
+        <form onSubmit={handleLogin} noValidate>
+          <Title order={2} mb="xl" ta="center">
+            Login
+          </Title>
+          {mutation.isError && (
+            <Alert color="red" mb="md">
+              Invalid credentials
+            </Alert>
+          )}
+          <TextInput
+            label="Username"
+            placeholder="emilys"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            error={submitted && !username.trim() ? "Username is required" : ""}
+          />
 
-        <PasswordInput
-          mt="md"
-          label="Password"
-          placeholder="Enter password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={
-            submitted && !password.trim()
-              ? "Password is required"
-              : ""
-          }
-        />
+          <PasswordInput
+            mt="md"
+            label="Password"
+            placeholder="Enter password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={submitted && !password.trim() ? "Password is required" : ""}
+          />
 
-        <Button
-          fullWidth
-          mt="xl"
-          type="submit"
-          onClick={()=> mutation.reset()}
-          loading={mutation.isPending}
-        >
-          Login
-        </Button>
-        <Text ta="center" c="dimmed" mt="md">
-          Try: <strong>emilys</strong> / <strong>emilyspass</strong>
-        </Text>
+          <Button
+            fullWidth
+            mt="xl"
+            type="submit"
+            onClick={() => mutation.reset()}
+            loading={mutation.isPending}
+          >
+            Login
+          </Button>
+          <Text ta="center" c="dimmed" mt="md">
+            Try: <strong>emilys</strong> / <strong>emilyspass</strong>
+          </Text>
 
-        <Text ta="center" c="dimmed" mt="sm">
-          Don't have an account? <Anchor onClick={()=>navigate("/signup")}>Sign up</Anchor>
-        </Text>
+          <Text ta="center" c="dimmed" mt="sm">
+            Don't have an account?{" "}
+            <Anchor onClick={() => navigate("/signup")}>Sign up</Anchor>
+          </Text>
         </form>
       </Card>
-      
     </Container>
   );
 };

@@ -1,10 +1,6 @@
 import {
   Container,
-  Card,
-  Image,
   Text,
-  Badge,
-  Button,
   Group,
   Title,
   Grid,
@@ -13,12 +9,34 @@ import {
   Select,
 } from "@mantine/core";
 import { useProducts } from "../hooks/useProducts";
-import { useNavigate } from "react-router-dom";
 import { ProductSidebarFilters } from "../components/ProductSidebarFilters";
+import { ProductCard } from "../components/ProductCard";
+import useProductFilters from "../../navbar/hooks/useProductFilters";
+import { useState } from "react";
 const Products = () => {
   const { data, isLoading, error } = useProducts();
-  const navigate = useNavigate();
+  const { category, minPrice, rating, onSale } = useProductFilters();
+  
+  const [sortBy, setSortBy] = useState("Price (Low to High)");
+  const products = data?.products || [];
+  const filtersCategories = products.filter((product) => {
+    const matchCategory =
+      category === "All Categories" || category === product.category;
+    const matchPrice = minPrice <= product.price;
+    const matchRating = rating <= product.rating || rating === 0;
+    const matchOnSale = product.discountPercentage > 0 || !onSale;
+    return matchCategory && matchPrice && matchRating && matchOnSale;
+  });
+  const sortedFiltersCategories = [...filtersCategories];
+  sortedFiltersCategories.sort((a, b) => {
+    if (sortBy === "Name (A-Z)") return a.title.localeCompare(b.title);
 
+    if (sortBy === "Price (Low to High)") return a.price - b.price;
+
+    if (sortBy === "Price (High to Low)") return b.price - a.price;
+    if (sortBy === "Rating (High to Low)") return b.rating - a.rating;
+    return 0
+  });
   if (isLoading) {
     return (
       <Center>
@@ -29,7 +47,8 @@ const Products = () => {
   if (error) {
     return <Text>Error loading products</Text>;
   }
-  const total = data?.products.length;
+  const total = filtersCategories.length;
+  
   return (
     <Container size="xl" py="xl">
       <Title order={1} mb="xl">
@@ -46,52 +65,21 @@ const Products = () => {
             <Text c="dimmed">{total} products found</Text>
 
             <Select
-              data={["Price (Low to High)", "Price (High to Low)","Rating (High to Low)", "Name (A-Z)"]}
-              defaultValue="Price (Low to High)"
+              data={[
+                "Price (Low to High)",
+                "Price (High to Low)",
+                "Rating (High to Low)",
+                "Name (A-Z)",
+              ]}
+              value={sortBy}
+              onChange={(value) => setSortBy(value || "")}
             />
           </Group>
 
           <Grid>
-            {data?.products.map((product) => (
+            {sortedFiltersCategories.map((product) => (
               <Grid.Col span={4} key={product.id}>
-                <Card
-                  h="100%"
-                  shadow="sm"
-                  padding="lg"
-                  radius="md"
-                  withBorder
-                  style={{ display: "flex", flexDirection: "column" }}
-                >
-                  <Card.Section>
-                    <Image src={product.thumbnail} height={180} fit="contain" />
-                  </Card.Section>
-
-                  <Group justify="space-between" mt="md">
-                    <Text fw={600} lineClamp={1}>
-                      {product.title}
-                    </Text>
-
-                    <Badge color="pink">${product.price}</Badge>
-                  </Group>
-
-                  <Text size="sm" c="dimmed" lineClamp={2} mt="sm">
-                    {product.description}
-                  </Text>
-
-                  <Group mt="sm">
-                    <Text size="sm">Stock: {product.stock}</Text>
-                    <Text size="sm">Rating: {product.rating}</Text>
-                  </Group>
-
-                  <Button
-                    color="blue"
-                    fullWidth
-                    mt="auto"
-                    onClick={() => navigate(`/products/${product.id}`)}
-                  >
-                    View Details
-                  </Button>
-                </Card>
+                <ProductCard product={product} />
               </Grid.Col>
             ))}
           </Grid>

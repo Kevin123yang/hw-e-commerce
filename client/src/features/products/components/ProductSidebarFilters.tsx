@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Checkbox,
   Divider,
   Group,
@@ -10,29 +11,81 @@ import {
   Switch,
   Text,
   Title,
-} from '@mantine/core';
-import { IconStar, IconStarFilled } from '@tabler/icons-react';
+} from "@mantine/core";
+import { IconStar, IconStarFilled } from "@tabler/icons-react";
+import { useProducts } from "../hooks/useProducts";
+import useProductFilters from "../../navbar/hooks/useProductFilters";
+import { useState } from "react";
 
 const RATINGS = [4, 3, 2, 1];
-
 export const ProductSidebarFilters = () => {
+  const { data } = useProducts();
+  const {
+    category,
+    resetCategory,
+    minPrice,
+    maxPrice,
+    rating,
+    onSale,
+    applyFilter
+  } = useProductFilters();
+
+  const categoriesData =
+    data?.products.map((product) => product.category) || [];
+  const categories = ["All Categories", ...new Set(categoriesData)];
+  const [draftCategory, setDraftCategory] = useState(category);
+  const [draftPriceRange, setDraftPriceRange] = useState<[number, number]>([
+    minPrice,
+    maxPrice,
+  ]);
+  const [draftRating, setDraftRating] = useState(rating);
+  const [draftOSale, setDraftOnSale] = useState(onSale);
+  const handleReset = () => {
+    setDraftCategory("All Categories");
+    setDraftPriceRange([0, 2000]);
+    setDraftRating(0);
+    setDraftOnSale(false);
+    resetCategory();
+  };
+  const hasChanges =
+    draftCategory !== category ||
+    draftPriceRange[0] !== minPrice ||
+    draftPriceRange[1] !== maxPrice ||
+    draftRating !== rating ||
+    draftOSale != onSale;
+
+  const handleChange = () => {
+    applyFilter(draftCategory, draftPriceRange,draftRating ,draftOSale)
+
+  }
   return (
     <Stack gap="md">
-      <Box p="md" style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-        <Stack gap="xl">
-          <Stack gap="sm">
-            <Title order={3}>Filters</Title>
-          </Stack>
+      <Box p="sm" style={{ backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
+        <Stack gap="md">
+          <Group justify="space-between" align="center" mb="xl">
+            <Title order={2}>Filters</Title>
+            {hasChanges && (
+              <Group>
+                <Button onClick={handleChange}>Apply</Button>
+                <Button variant="outline" onClick={handleReset}>
+                  Reset
+                </Button>
+              </Group>
+            )}
+          </Group>
 
           <Stack gap="sm">
             <Text fw={600} size="sm">
               Category
             </Text>
             <Select
-              data={[{ value: '', label: 'All Categories' }]}
-              placeholder="All Categories"
+              data={categories}
               searchable
-              clearable
+              clearable={draftCategory !== "All Categories"}
+              value={draftCategory}
+              onChange={(value) => {
+                setDraftCategory(value || "All Categories");
+              }}
             />
           </Stack>
 
@@ -46,10 +99,11 @@ export const ProductSidebarFilters = () => {
               min={0}
               max={2000}
               step={50}
-              value={[0, 2000]}
+              value={draftPriceRange}
+              onChange={setDraftPriceRange}
               marks={[
-                { value: 0, label: '$0' },
-                { value: 2000, label: '$2000' },
+                { value: 0, label: "$0" },
+                { value: 2000, label: "$2000" },
               ]}
               mb="md"
             />
@@ -78,14 +132,20 @@ export const ProductSidebarFilters = () => {
               Rating
             </Text>
             <Stack gap="xs">
-              {RATINGS.map((rating) => (
-                <Group key={rating} gap="xs">
-                  <Checkbox checked={false} />
+              {RATINGS.map((starRating) => (
+                <Group key={starRating} gap="xs">
+                  <Checkbox
+                    checked={draftRating === starRating}
+                    onClick={() => {
+                      console.log("rating clicked:", starRating);
+                      setDraftRating(starRating);
+                    }}
+                  />
                   <Group gap={2}>
-                    {[...Array(rating)].map((_, i) => (
+                    {[...Array(starRating)].map((_, i) => (
                       <IconStarFilled key={i} size={16} color="#ffd43b" />
                     ))}
-                    {[...Array(5 - rating)].map((_, i) => (
+                    {[...Array(5 - starRating)].map((_, i) => (
                       <IconStar key={i} size={16} color="#868e96" />
                     ))}
                   </Group>
@@ -101,7 +161,11 @@ export const ProductSidebarFilters = () => {
             <Text fw={600} size="sm">
               Deals
             </Text>
-            <Switch label="On Sale / Discounted" checked={false} />
+            <Switch
+              label="On Sale / Discounted"
+              checked={draftOSale}
+              onClick={() => setDraftOnSale((prev) => !prev)}
+            />
           </Stack>
         </Stack>
       </Box>

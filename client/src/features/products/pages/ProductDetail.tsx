@@ -14,16 +14,21 @@ import { useNavigate } from "react-router-dom";
 import { useProduct } from "../hooks/useProduct";
 import { useParams } from "react-router-dom";
 import { useAddCartItem } from "../../cart/pages/hooks/useAddCart";
+import { useContext } from "react";
+import { AuthContext } from "../../auth/pages/context/AuthContext";
 const ProductDetail = () => {
   const { id } = useParams();
-
   const { data: product, isLoading, error } = useProduct(Number(id));
+
   const navigate = useNavigate();
-  const addCartItem = useAddCartItem();
+  const auth = useContext(AuthContext);
+  if (!auth) throw new Error("AuthContext not found");
+  const { user } = auth;
+  const addCartItem = useAddCartItem(user?.id);
   if (isLoading) {
     return (
       <Center>
-        <Loader />;
+        <Loader />
       </Center>
     );
   }
@@ -69,7 +74,17 @@ const ProductDetail = () => {
             Stock: {product.stock} units available
           </Text>
           <Group>
-            <Button size="lg" onClick={() => addCartItem.mutate(cartItem)}>
+            <Button
+              loading={addCartItem.isPending}
+              size="lg"
+              onClick={() => {
+                if (!user) {
+                  navigate("/login");
+                  return;
+                }
+                addCartItem.mutate(cartItem);
+              }}
+            >
               Add to Cart
             </Button>
             <Button
