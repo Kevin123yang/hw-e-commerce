@@ -15,8 +15,8 @@ import useProductFilters from "../../navbar/hooks/useProductFilters";
 import { useState } from "react";
 const Products = () => {
   const { data, isLoading, error } = useProducts();
-  const { category, minPrice, rating, onSale } = useProductFilters();
-  
+  const { category, minPrice, rating, onSale, search } = useProductFilters();
+
   const [sortBy, setSortBy] = useState("Price (Low to High)");
   const products = data?.products || [];
   const filtersCategories = products.filter((product) => {
@@ -25,7 +25,12 @@ const Products = () => {
     const matchPrice = minPrice <= product.price;
     const matchRating = rating <= product.rating || rating === 0;
     const matchOnSale = product.discountPercentage > 0 || !onSale;
-    return matchCategory && matchPrice && matchRating && matchOnSale;
+    const matchSearch = product.title
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    return (
+      matchCategory && matchPrice && matchRating && matchOnSale && matchSearch
+    );
   });
   const sortedFiltersCategories = [...filtersCategories];
   sortedFiltersCategories.sort((a, b) => {
@@ -35,7 +40,7 @@ const Products = () => {
 
     if (sortBy === "Price (High to Low)") return b.price - a.price;
     if (sortBy === "Rating (High to Low)") return b.rating - a.rating;
-    return 0
+    return 0;
   });
   if (isLoading) {
     return (
@@ -48,7 +53,7 @@ const Products = () => {
     return <Text>Error loading products</Text>;
   }
   const total = filtersCategories.length;
-  
+
   return (
     <Container size="xl" py="xl">
       <Title order={1} mb="xl">

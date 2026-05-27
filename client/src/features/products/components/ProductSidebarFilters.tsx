@@ -27,7 +27,7 @@ export const ProductSidebarFilters = () => {
     maxPrice,
     rating,
     onSale,
-    applyFilter
+    applyFilter,
   } = useProductFilters();
 
   const categoriesData =
@@ -40,12 +40,14 @@ export const ProductSidebarFilters = () => {
   ]);
   const [draftRating, setDraftRating] = useState(rating);
   const [draftOSale, setDraftOnSale] = useState(onSale);
+  const [isFilter, setIsFilter] = useState(false);
   const handleReset = () => {
     setDraftCategory("All Categories");
     setDraftPriceRange([0, 2000]);
     setDraftRating(0);
     setDraftOnSale(false);
     resetCategory();
+    setIsFilter(false);
   };
   const hasChanges =
     draftCategory !== category ||
@@ -55,16 +57,17 @@ export const ProductSidebarFilters = () => {
     draftOSale != onSale;
 
   const handleChange = () => {
-    applyFilter(draftCategory, draftPriceRange,draftRating ,draftOSale)
+    applyFilter(draftCategory, draftPriceRange, draftRating, draftOSale);
+    setIsFilter(false);
+  };
 
-  }
   return (
     <Stack gap="md">
       <Box p="sm" style={{ backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
         <Stack gap="md">
           <Group justify="space-between" align="center" mb="xl">
             <Title order={2}>Filters</Title>
-            {hasChanges && (
+            {isFilter && hasChanges && (
               <Group>
                 <Button onClick={handleChange}>Apply</Button>
                 <Button variant="outline" onClick={handleReset}>
@@ -84,6 +87,8 @@ export const ProductSidebarFilters = () => {
               clearable={draftCategory !== "All Categories"}
               value={draftCategory}
               onChange={(value) => {
+                setIsFilter(true);
+
                 setDraftCategory(value || "All Categories");
               }}
             />
@@ -100,7 +105,10 @@ export const ProductSidebarFilters = () => {
               max={2000}
               step={50}
               value={draftPriceRange}
-              onChange={setDraftPriceRange}
+              onChange={(value) => {
+                setIsFilter(true);
+                setDraftPriceRange(value);
+              }}
               marks={[
                 { value: 0, label: "$0" },
                 { value: 2000, label: "$2000" },
@@ -137,7 +145,7 @@ export const ProductSidebarFilters = () => {
                   <Checkbox
                     checked={draftRating === starRating}
                     onClick={() => {
-                      console.log("rating clicked:", starRating);
+                      setIsFilter(true);
                       setDraftRating(starRating);
                     }}
                   />
@@ -164,7 +172,10 @@ export const ProductSidebarFilters = () => {
             <Switch
               label="On Sale / Discounted"
               checked={draftOSale}
-              onClick={() => setDraftOnSale((prev) => !prev)}
+              onClick={() => {
+                setIsFilter(true);
+                setDraftOnSale((prev) => !prev);
+              }}
             />
           </Stack>
         </Stack>

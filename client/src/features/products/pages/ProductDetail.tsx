@@ -9,6 +9,7 @@ import {
   Title,
   Loader,
   Center,
+  Box,
 } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useProduct } from "../hooks/useProduct";
@@ -97,6 +98,32 @@ const ProductDetail = () => {
           </Group>
         </Grid.Col>
       </Grid>
+      <Title order={2} mt="xl" mb="md">
+        Reviews
+      </Title>
+
+      {product.reviews?.map((review, index) => (
+        <Box
+          key={index}
+          p="md"
+          mb="md"
+          style={{
+            border: "1px solid #e9ecef",
+            borderRadius: "8px",
+          }}
+        >
+          <Group justify="space-between" mb="xs">
+            <Text fw={600}>{review.reviewerName}</Text>
+            <Text>{review.rating}/5</Text>
+          </Group>
+
+          <Text mb="xs">{review.comment}</Text>
+
+          <Text size="sm" c="dimmed">
+            {new Date(review.date).toLocaleDateString()}
+          </Text>
+        </Box>
+      ))}
     </Container>
   );
 };

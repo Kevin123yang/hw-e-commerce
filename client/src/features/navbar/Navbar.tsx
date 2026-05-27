@@ -1,4 +1,4 @@
-import { Avatar, Button, Group, Indicator, Menu, Text } from "@mantine/core";
+import { Avatar, Button, Group, Indicator, Menu, Text, } from "@mantine/core";
 import {
   IconChevronDown,
   IconLogout,
@@ -20,6 +20,8 @@ export const Navbar = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
+
+  
   if (!auth) {
     throw new Error("AuthContext not found");
   }

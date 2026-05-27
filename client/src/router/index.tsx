@@ -1,17 +1,19 @@
 import { createHashRouter } from "react-router-dom";
+import { lazy } from "react";
 
 import GlobalErrorPage from "../components/errors/GlobalErrorPage";
 import RootLayout from "../components/layout/RootLayout";
 
-import Home from "../features/products/pages/Home";
-import Products from "../features/products/pages/Products";
-import ProductDetail from "../features/products/pages/ProductDetail";
-import Cart from "../features/cart/pages/Cart";
-import Login from "../features/auth/pages/Login";
-import Signup from "../features/auth/pages/Signup";
-import Settings from "../features/settings/pages/Settings";
+const Home = lazy(() => import("../features/products/pages/Home"));
+const Products = lazy(() => import("../features/products/pages/Products"));
+const ProductDetail = lazy(
+  () => import("../features/products/pages/ProductDetail")
+);
+const Cart = lazy(() => import("../features/cart/pages/Cart"));
+const Login = lazy(() => import("../features/auth/pages/Login"));
+const Signup = lazy(() => import("../features/auth/pages/Signup"));
+const Settings = lazy(() => import("../features/settings/pages/Settings"));
 import ProtectedRoute from "./ProtectedRoute";
-
 export const router = createHashRouter([
   {
     path: "/",
@@ -28,15 +30,19 @@ export const router = createHashRouter([
       { path: "signup", element: <Signup /> },
       {
         path: "cart",
-        element: <ProtectedRoute>
-            <Cart />,
+        element: (
+          <ProtectedRoute>
+            <Cart />
           </ProtectedRoute>
+        ),
       },
       {
         path: "settings",
-        element:<ProtectedRoute>
-          <Settings />,
-        </ProtectedRoute>
+        element: (
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
