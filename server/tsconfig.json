@@ -10,5 +10,5 @@
     "types": ["node"],
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "build.ts", "drizzle.config.ts"]
+  "include": ["src/**/*", "build.ts", "drizzle.config.ts", "modules/products/product.routes.ts", "modules/products/product.controller.ts"]
 }
