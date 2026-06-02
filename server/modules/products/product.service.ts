@@ -1,26 +1,27 @@
-import { Product } from "./type";
-const products: Product[] = [
-  {
-    id: "1",
-    title: "iPhone",
-    price: 999,
-  },
-  {
-    id: "2",
-    title: "MacBook",
-    price: 1999,
-  },
-];
-export function getProducts() {
-  return products;
-}
-// export function createProduct(req:Request, res:Response){
-//   res.json({
+import { NewProduct } from "../../src/db/schema";
+import * as productRepository from "./product.repository"
 
-//   })
-// }
-export function getProductById( id:string) {
+export async function getProducts({
+  limit,
+  skip,
+  search,
+}: {
+  limit: number;
+  skip: number;
+  search?: string;
+}) {
+  return productRepository.getProducts({
+    limit,
+    skip,
+    search,
+  });
+}
+export async function getProductById( id:number) {
   
-  const product = products.find((product) => product.id === id);
-  return product;
+  
+  return productRepository.getProductById(id);
+}
+
+export async function createProduct(data: NewProduct) {
+  return productRepository.createProduct(data);
 }

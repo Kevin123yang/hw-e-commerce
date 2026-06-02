@@ -14,7 +14,8 @@
     "db:seed": "tsx src/db/seed.ts",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f"
+    "docker:logs": "docker-compose logs -f",
+    "seed": "ts-node src/db/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,9 +25,11 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
+    "postgres": "^3.4.9",
     "zod": "^4.3.6"
   },
   "devDependencies": {

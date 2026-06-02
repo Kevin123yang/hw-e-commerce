@@ -1,54 +1,32 @@
-import { User } from "./user.types";
+import * as userRepository from "./user.repository";
+import {
+  CreateUserInput,
+  UpdateUserInput,
+} from "./user.validator";
 
-const users: User[] = [
-  {
-    id: "1",
-    username: "kevin",
-    email: "kevin@gmail.com",
-    password: "123456",
-  },
-];
-
-export function getUsers() {
-  return users.map(removePassword);
+export async function getUsers() {
+  return userRepository.getUsers();
 }
 
-export function getUserById(id: string) {
-  const user = users.find((user) => user.id === id);
-  if (!user) return undefined
-  return removePassword(user);
+export async function getUserById(id: number) {
+  return userRepository.getUserById(id);
 }
 
-export function createUser(newUser: User) {
-  users.push(newUser);
-  return removePassword(newUser);;
+export async function createUser(newUser: CreateUserInput) {
+  return userRepository.createUser(newUser);
 }
 
-export function updateUser(id: string, data: Partial<User>) {
-  const user = users.find((user) => user.id === id);
-  if (!user) return undefined;
-
-  Object.assign(user, data);
-  return removePassword(user);
+export async function updateUser(id: number, data: UpdateUserInput) {
+  return userRepository.updateUser(id, data);
 }
 
-export function deleteUser(id: string) {
-  const index = users.findIndex((user) => user.id === id);
-  if (index === -1) return undefined;
-
-  const deletedUser = users.splice(index, 1)[0];
-  return removePassword(deletedUser);
+export async function deleteUser(id: number) {
+  return userRepository.deleteUser(id);
 }
-function removePassword(user: User) {
-  const { password, ...safeUser } = user;
-  return safeUser;
-}
-export function getUserByUsernameOrEmail(username?: string, email?: string) {
-  const user = users.find(
-    user => user.username === username || user.email === email
-  );
 
-  if (!user) return undefined;
-
-  return removePassword(user);
+export async function getUserByUsernameOrEmail(
+  username?: string,
+  email?: string
+) {
+  return userRepository.getUserByUsernameOrEmail(username, email);
 }
