@@ -5,9 +5,10 @@ import productRoutes from "../modules/products/product.routes"
 import cartRoutes from "../modules/carts/cart.routes"
 import userRoutes from "../modules/users/user.routes"
 import { errorMiddleWave } from "./core/errors/errorMiddleware";
+import authRoutes from "../modules/auth/auth.routes";
+
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
-
 app.use(
   cors({
     origin: "*",
@@ -22,6 +23,7 @@ app.get("/", (_req, res) => {
 app.use("/api/products", productRoutes);
 app.use("/api/carts",cartRoutes );
 app.use("/api/users",userRoutes );
+app.use("/api/auth", authRoutes);
 
 app.use(errorMiddleWave);
 app.listen(PORT, () => {

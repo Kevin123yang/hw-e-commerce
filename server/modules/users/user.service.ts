@@ -1,4 +1,5 @@
 import * as userRepository from "./user.repository";
+import bcrypt from "bcrypt";
 import {
   CreateUserInput,
   UpdateUserInput,
@@ -13,10 +14,12 @@ export async function getUserById(id: number) {
 }
 
 export async function createUser(newUser: CreateUserInput) {
-  return userRepository.createUser(newUser);
+  const hashedPassword = await bcrypt.hash(newUser.password, 10);
+  return userRepository.createUser({...newUser, password: hashedPassword});
 }
 
 export async function updateUser(id: number, data: UpdateUserInput) {
+  
   return userRepository.updateUser(id, data);
 }
 
@@ -29,4 +32,8 @@ export async function getUserByUsernameOrEmail(
   email?: string
 ) {
   return userRepository.getUserByUsernameOrEmail(username, email);
+}
+
+export async function getUserByEmail(email: string) {
+  return userRepository.getUserByEmail(email);
 }

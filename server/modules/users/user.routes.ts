@@ -1,9 +1,25 @@
 import { Router } from "express";
-import { getUserById, getUsers,createUser,updateUser,deleteUser} from "./user.controller";
-const router = Router()
-router.get("/", getUsers);
-router.get("/:id", getUserById);
+import {
+  getUserById,
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+} from "./user.controller";
+
+import { requireAuth } from "../auth/auth.middleware";
+
+const router = Router();
+
+router.get("/", requireAuth, getUsers);
+
+router.get("/:id", requireAuth, getUserById);
+
 router.post("/", createUser);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
-export default router
+
+router.put("/:id", requireAuth, updateUser);
+
+router.delete("/:id", requireAuth, deleteUser);
+
+
+export default router;

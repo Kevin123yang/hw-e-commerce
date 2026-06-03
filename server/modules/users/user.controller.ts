@@ -23,12 +23,21 @@ export async function getUsers(req: Request, res: Response) {
 }
 
 export async function getUserById(req: Request, res: Response) {
-  const id = Number(req.params.id )
+  const id = Number(req.params.id);
+
   const user = await userService.getUserById(id);
 
   if (!user) {
     return res.status(404).json({
       message: "User not found",
+    });
+  }
+
+  const currentUserId = (req as any).userId;
+
+  if (currentUserId !== id) {
+    return res.status(403).json({
+      message: "Forbidden",
     });
   }
 

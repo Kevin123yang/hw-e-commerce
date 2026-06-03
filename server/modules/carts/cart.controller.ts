@@ -6,9 +6,16 @@ import {
   updateCartSchema,
 } from "./cart.validator";
 
-export async function getCarts(_req: Request, res: Response) {
-  const cart = await cartService.getCarts();
-  res.json(cart);
+export async function getCarts(req: Request, res: Response) {
+  const currentUserId = (req as any).userId;
+
+  const carts = await cartService.getCarts();
+
+  const myCarts = carts.filter((item: any) => {
+    return item.carts.userId === currentUserId;
+  });
+
+  res.json(myCarts);
 }
 
 export async function getCartsById(req: Request, res: Response) {
@@ -18,6 +25,15 @@ export async function getCartsById(req: Request, res: Response) {
   if (cart.length === 0) {
     return res.status(404).json({
       message: "Cart not found",
+    });
+  }
+
+  const cartOwnerId = cart[0].carts.userId;
+  const currentUserId = (req as any).userId;
+
+  if (currentUserId !== cartOwnerId) {
+    return res.status(403).json({
+      message: "Forbidden",
     });
   }
 
